@@ -73,7 +73,7 @@ app.post('/ideas',(req,res)=>{
     }
     new Idea(newUser)
         .save()
-        .then(idea=>{
+        .then(idea =>{
             res.redirect('/ideas');
 
         })
@@ -82,7 +82,7 @@ app.post('/ideas',(req,res)=>{
 });
 //idea index page
 app.get('/ideas',(req,res)=>{
-    idea.find({})  
+    Idea.find({})  
     .sort({date:'desc'})
     .then(ideas=>{
         res.render('ideas/index',{
