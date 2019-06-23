@@ -43,9 +43,25 @@ app.get('/about', (req, res) => {
     res.render('About');
 });
 
+
+
 //load ideas
 app.get('/ideas/add',(req,res)=>{
     res.render('ideas/add');
+});
+
+//edit ideas
+
+app.get('/ideas/edit/:id', (req, res) => {
+    Idea.findOne({
+        _id :req.params.id
+
+    })
+    .then(idea =>{
+        res.render('ideas/edit',{
+            idea:idea
+        });
+    });
 });
 
 //process form
