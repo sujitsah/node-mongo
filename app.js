@@ -12,11 +12,11 @@ const users = require('./routes/users');
 mongoose.Promise = global.Promise;
 
 //connect to mongoose
-mongoose.connect('mongodb://localhost/vidjot-dev',{
+mongoose.connect('mongodb://localhost/vidjot-dev', {
     useNewUrlParser: true
 })
-.then(()=>{console.log('mongodb connected')})
-.catch(err => console.log(err));
+    .then(() => { console.log('mongodb connected') })
+    .catch(err => console.log(err));
 
 
 
@@ -50,8 +50,8 @@ app.get('/about', (req, res) => {
 
 
 //routes
-app.use('/ideas',ideas);
-app.use('/users',users);
+app.use('/ideas', ideas);
+app.use('/users', users);
 const port = 5000;
 
 app.listen(port, () => {
