@@ -3,108 +3,101 @@ const mongoose = require('mongoose');
 const router = express.Router();
 const {ensureAuthenticated} = require('../helpers/auth');
 
-
-//load the mongoose
-require('../models/idea');
+// Load Idea Model
+require('../models/Idea');
 const Idea = mongoose.model('ideas');
 
-//load ideas
-router.get('/add',ensureAuthenticated,(req,res)=>{
-    res.render('ideas/add');
-});
-
-//edit ideas
-
-router.get('/edit/:id', ensureAuthenticated,(req, res) => {
-    Idea.findOne({
-        _id :req.params.id
-
-    })
-    .then(idea =>{
-        res.render('ideas/edit',{
-            idea:idea
-        });
+// Idea Index Page
+router.get('/', ensureAuthenticated, (req, res) => {
+  Idea.find({user: req.user.id})
+    .sort({date:'desc'})
+    .then(ideas => {
+      res.render('ideas/index', {
+        ideas:ideas
+      });
     });
 });
 
-//process form
-router.post('/',ensureAuthenticated, (req,res)=>{
-    let errors = [];
+// Add Idea Form
+router.get('/add', ensureAuthenticated, (req, res) => {
+  res.render('ideas/add');
+});
 
-    if(!req.body.title){
-        errors.push({text: 'please add title'});
+// Edit Idea Form
+router.get('/edit/:id', ensureAuthenticated, (req, res) => {
+  Idea.findOne({
+    _id: req.params.id
+  })
+  .then(idea => {
+    if(idea.user != req.user.id){
+      req.flash('error_msg', 'Not Authorized');
+      res.redirect('/ideas');
+    } else {
+      res.render('ideas/edit', {
+        idea:idea
+      });
     }
-    if(!req.body.details){
-        errors.push({text: 'please add details'});
-    }
-    if(errors.length > 0){
-        res.render('ideas/add',{
-            errors:errors,
-            title: req.body.title,
-            details: req.body.details
-        });
-    }
-    else
-    {
-    const newUser={
-            title:req.body.title,
-            details:req.body.details
+    
+  });
+});
+
+// Process Form
+router.post('/', ensureAuthenticated, (req, res) => {
+  let errors = [];
+
+  if(!req.body.title){
+    errors.push({text:'Please add a title'});
+  }
+  if(!req.body.details){
+    errors.push({text:'Please add some details'});
+  }
+
+  if(errors.length > 0){
+    res.render('/add', {
+      errors: errors,
+      title: req.body.title,
+      details: req.body.details
+    });
+  } else {
+    const newUser = {
+      title: req.body.title,
+      details: req.body.details,
+      user: req.user.id
     }
     new Idea(newUser)
-        .save()
-        .then(idea =>{
-            req.flash('success_msg','Your idea has been added')
-            res.redirect('/ideas');
-
-        })
-    
-    }
-});
-//idea index page
-router.get('/',ensureAuthenticated, (req,res)=>{
-    Idea.find({})  
-    .sort({date:'desc'})
-    .then(ideas=>{
-        res.render('ideas/index',{
-            ideas:ideas
-        });
-        
-    });
-    
-});
-
-//update form
-
-router.put('/:id',ensureAuthenticated, (req , res) => {
-    Idea.findOne({
-        _id :req.params.id})
-        //new values
-        .then(idea=>{
-            idea.title= req.body.title,
-            idea.details=req.body.details
-        
-            idea.save()
-            .then(idea=>{
-                req.flash('success_msg','your idea has been updated');
-                res.redirect('/ideas');
-            })
-        });
-        
-});
-
-//delete the ideas
-
-router.delete('/:id',ensureAuthenticated, (req,res)=>{
-    Idea.remove({
-        _id: req.params.id
-    })
-    .then(()=>{
-
-        req.flash('success_msg','video has been deleted');
+      .save()
+      .then(idea => {
+        req.flash('success_msg', 'Video idea added');
         res.redirect('/ideas');
-
-    });
+      })
+  }
 });
 
+// Edit Form process
+router.put('/:id', ensureAuthenticated, (req, res) => {
+  Idea.findOne({
+    _id: req.params.id
+  })
+  .then(idea => {
+    // new values
+    idea.title = req.body.title;
+    idea.details = req.body.details;
+
+    idea.save()
+      .then(idea => {
+        req.flash('success_msg', 'Video idea updated');
+        res.redirect('/ideas');
+      })
+  });
+});
+
+// Delete Idea
+router.delete('/:id', ensureAuthenticated, (req, res) => {
+  Idea.remove({_id: req.params.id})
+    .then(() => {
+      req.flash('success_msg', 'Video idea removed');
+      res.redirect('/ideas');
+    });
+});
 
 module.exports = router;
