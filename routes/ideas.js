@@ -52,6 +52,7 @@ router.post('/',(req,res)=>{
     new Idea(newUser)
         .save()
         .then(idea =>{
+            req.flash('success_msg','Your idea has been added')
             res.redirect('/ideas');
 
         })
@@ -83,6 +84,7 @@ router.put('/:id',(req , res) => {
         
             idea.save()
             .then(idea=>{
+                req.flash('success_msg','your idea has been updated');
                 res.redirect('/ideas');
             })
         });
@@ -96,6 +98,8 @@ router.delete('/:id',(req,res)=>{
         _id: req.params.id
     })
     .then(()=>{
+
+        req.flash('success_msg','video has been deleted');
         res.redirect('/ideas');
 
     });

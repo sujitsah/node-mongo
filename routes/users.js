@@ -40,35 +40,40 @@ router.post('/register', (req, res) => {
     }
     else {
 
-        user.findOne({email: req.body.email})
-        .then(user=>{
-            
-        })
-        const newUser = new User({
-            name: req.body.name,
-            email: req.body.email,
-            password: req.body.password
-        })
-        bcrypt.genSalt(10,(err,salt)=>{
-            bcrypt.hash(newUser.password,salt,(err,hash)=>{
-                if(err) throw err;
-                newUser.password = hash;
-
-                newUser.save()
-                .then(user=>{
-
-                    console.log('you can login');
-                  res.redirect('/users/login');  
+        User.findOne({email: req.body.email})
+        .then(user =>{
+            if(user){
+                req.flash('error_msg','email already exist');
+                res.redirect('/users/register');
+            }
+            else{
+                const newUser = new User({
+                    name: req.body.name,
+                    email: req.body.email,
+                    password: req.body.password
                 })
-                .catch(err=>{
-                    console.log(err);
-                    return;
+                bcrypt.genSalt(10,(err,salt)=>{
+                    bcrypt.hash(newUser.password,salt,(err,hash)=>{
+                        if(err) throw err;
+                        newUser.password = hash;
+        
+                        newUser.save()
+                        .then(user=>{
+        
+                          req.flash('success_msg','you are now registered');
+                          res.redirect('/users/login');  
+                        })
+                        .catch(err=>{
+                            console.log(err);
+                            return;
+                        });
+                    });
                 });
-            });
-        });
-        // console.log(newUser);
-        // res.send('passed');
 
+            }
+        })
+      
+        
     }
 });
 

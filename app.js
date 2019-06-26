@@ -3,6 +3,8 @@ var exphbs = require('express-handlebars');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const methodOverride = require('method-override')
+const flash = require('connect-flash');
+const session = require('express-session');
 
 
 //load routes
@@ -31,6 +33,22 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.use(methodOverride('_method'));
+//express session middleware
+app.use(session({
+    secret: 'secret',
+    resave: true,
+    saveUninitialized: true,
+  }));
+
+  app.use(flash());
+
+  //global variables
+  app.use(function(req,res,next){
+      res.locals.success_msg = req.flash('success_msg');
+      res.locals.error_msg = req.flash('error_msg');
+      res.locals.error = req.flash('error');
+      next();
+    });
 
 
 app.get('/', (req, res) => {
