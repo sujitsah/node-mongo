@@ -79,7 +79,7 @@ router.put('/:id', ensureAuthenticated, (req, res) => {
     _id: req.params.id
   })
   .then(idea => {
-    // new values
+    // new values to ideas
     idea.title = req.body.title;
     idea.details = req.body.details;
 
