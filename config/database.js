@@ -1,6 +1,6 @@
 if(process.env.NODE_ENV=== 'production'){
 module.exports = {
-    mongoURI: 'mongodb+srv://sujit:Sujits@h60@cluster0-5lftc.mongodb.net/test?retryWrites=true&w=majority'
+     mongoURI: 'mongodb+srv://sujit:Sujits@h60@node-crud-5lftc.mongodb.net/test?retryWrites=true&w=majority'
 }
 
 }
